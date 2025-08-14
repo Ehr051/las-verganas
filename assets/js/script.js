@@ -333,10 +333,11 @@ slideOutStyle.textContent = `
 document.head.appendChild(slideOutStyle);
 
 /*=============== GALLERY MODAL WITH NAVIGATION ===============*/
-document.addEventListener('DOMContentLoaded', () => {
-    const galleryItems = document.querySelectorAll('.gallery__item')
-    console.log('Gallery items found:', galleryItems.length) // Debug
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing gallery...');
     
+    // Gallery configuration
     const galleryImages = [
         {
             src: 'assets/images/vista a la sierra.jpeg',
@@ -353,14 +354,32 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Progreso de Obra',
             description: 'Estado actual de la construcción'
         }
-    ]
+    ];
 
-    let currentImageIndex = 0
+    let currentImageIndex = 0;
+    let modal = null;
 
-    function openGalleryModal() {
-        console.log('Opening gallery modal for image:', currentImageIndex) // Debug
-        const modal = document.createElement('div')
-        modal.className = 'gallery-modal'
+    // Get all gallery items
+    const galleryItems = document.querySelectorAll('.gallery__item');
+    console.log('Found gallery items:', galleryItems.length);
+
+    // Add click event to each gallery item
+    galleryItems.forEach((item, index) => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Gallery item clicked:', index);
+            currentImageIndex = index;
+            openModal();
+        });
+    });
+
+    function openModal() {
+        console.log('Opening modal for image:', currentImageIndex);
+        
+        // Create modal HTML
+        modal = document.createElement('div');
+        modal.className = 'gallery-modal';
         modal.innerHTML = `
             <div class="gallery-modal__overlay">
                 <div class="gallery-modal__content">
@@ -374,350 +393,326 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fas fa-chevron-right"></i>
                     </button>
                     <div class="gallery-modal__image-container">
-                        <img src="${galleryImages[currentImageIndex].src}" 
-                             alt="${galleryImages[currentImageIndex].title}" 
-                             class="gallery-modal__image">
+                        <img src="" alt="" class="gallery-modal__image">
                     </div>
                     <div class="gallery-modal__info">
-                        <h3 class="gallery-modal__title">${galleryImages[currentImageIndex].title}</h3>
-                        <p class="gallery-modal__description">${galleryImages[currentImageIndex].description}</p>
+                        <h3 class="gallery-modal__title"></h3>
+                        <p class="gallery-modal__description"></p>
                         <div class="gallery-modal__counter">
-                            <span>${currentImageIndex + 1}</span> / <span>${galleryImages.length}</span>
+                            <span class="current">1</span> / <span class="total">${galleryImages.length}</span>
                         </div>
                     </div>
                 </div>
             </div>
-        `
+        `;
+
+        // Add modal to page
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+
+        // Update image content
+        updateModalImage();
+
+        // Add event listeners
+        setupModalEvents();
+
+        // Add entrance animation
+        setTimeout(() => {
+            modal.classList.add('gallery-modal--active');
+        }, 10);
+    }
+
+    function updateModalImage() {
+        if (!modal) return;
+
+        const image = modal.querySelector('.gallery-modal__image');
+        const title = modal.querySelector('.gallery-modal__title');
+        const description = modal.querySelector('.gallery-modal__description');
+        const current = modal.querySelector('.current');
+
+        const currentImage = galleryImages[currentImageIndex];
         
-        // Add modal styles
-        const modalStyles = `
-            .gallery-modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease-out;
+        image.src = currentImage.src;
+        image.alt = currentImage.title;
+        title.textContent = currentImage.title;
+        description.textContent = currentImage.description;
+        current.textContent = currentImageIndex + 1;
+    }
+
+    function setupModalEvents() {
+        if (!modal) return;
+
+        const closeBtn = modal.querySelector('.gallery-modal__close');
+        const prevBtn = modal.querySelector('.gallery-modal__prev');
+        const nextBtn = modal.querySelector('.gallery-modal__next');
+        const overlay = modal.querySelector('.gallery-modal__overlay');
+
+        // Close modal
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                closeModal();
             }
-            
-            .gallery-modal__overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.95);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-                cursor: pointer;
+        });
+
+        // Navigation
+        prevBtn.addEventListener('click', prevImage);
+        nextBtn.addEventListener('click', nextImage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', handleKeyboard);
+    }
+
+    function closeModal() {
+        if (!modal) return;
+        
+        modal.classList.add('gallery-modal--closing');
+        document.removeEventListener('keydown', handleKeyboard);
+        
+        setTimeout(() => {
+            if (modal && document.body.contains(modal)) {
+                document.body.removeChild(modal);
+                document.body.style.overflow = 'auto';
+                modal = null;
             }
-            
+        }, 300);
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+        updateModalImage();
+    }
+
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+        updateModalImage();
+    }
+
+    function handleKeyboard(e) {
+        switch(e.key) {
+            case 'Escape':
+                closeModal();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+        }
+    }
+
+    // Add CSS styles for the modal
+    const modalStyles = `
+        .gallery-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-modal--active {
+            opacity: 1;
+        }
+
+        .gallery-modal--closing {
+            opacity: 0;
+        }
+
+        .gallery-modal__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .gallery-modal__content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-modal--active .gallery-modal__content {
+            transform: scale(1);
+        }
+
+        .gallery-modal__close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .gallery-modal__close:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        .gallery-modal__nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .gallery-modal__nav:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .gallery-modal__prev {
+            left: 20px;
+        }
+
+        .gallery-modal__next {
+            right: 20px;
+        }
+
+        .gallery-modal__image-container {
+            width: 100%;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .gallery-modal__image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-modal__info {
+            padding: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery-modal__title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a4d3a;
+            margin-bottom: 10px;
+        }
+
+        .gallery-modal__description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .gallery-modal__counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        @media (max-width: 768px) {
             .gallery-modal__content {
-                position: relative;
-                max-width: 90vw;
-                max-height: 90vh;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 16px;
-                overflow: hidden;
-                cursor: default;
-                animation: zoomIn 0.3s ease-out;
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            }
-            
-            .gallery-modal__close {
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                width: 45px;
-                height: 45px;
-                background: rgba(0, 0, 0, 0.7);
-                border: none;
-                border-radius: 50%;
-                color: white;
-                font-size: 20px;
-                cursor: pointer;
-                z-index: 10001;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease;
-            }
-            
-            .gallery-modal__close:hover {
-                background: rgba(0, 0, 0, 0.9);
-                transform: scale(1.1);
-            }
-            
-            .gallery-modal__nav {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 50px;
-                height: 50px;
-                background: rgba(0, 0, 0, 0.7);
-                border: none;
-                border-radius: 50%;
-                color: white;
-                font-size: 20px;
-                cursor: pointer;
-                z-index: 10001;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease;
-            }
-            
-            .gallery-modal__nav:hover {
-                background: rgba(0, 0, 0, 0.9);
-                transform: translateY(-50%) scale(1.1);
-            }
-            
-            .gallery-modal__prev {
-                left: 15px;
-            }
-            
-            .gallery-modal__next {
-                right: 15px;
+                max-width: 95vw;
+                max-height: 95vh;
             }
             
             .gallery-modal__image-container {
-                position: relative;
-                width: 100%;
-                max-height: 70vh;
-                overflow: hidden;
-            }
-            
-            .gallery-modal__image {
-                width: 100%;
-                height: auto;
-                max-height: 70vh;
-                object-fit: contain;
-                display: block;
-                transition: transform 0.3s ease;
+                height: 60vh;
             }
             
             .gallery-modal__info {
-                padding: 25px;
-                text-align: center;
+                padding: 20px;
             }
             
             .gallery-modal__title {
-                font-family: 'Space Grotesk', sans-serif;
-                font-size: 1.8rem;
-                font-weight: 600;
-                color: #1a4d3a;
-                margin-bottom: 10px;
+                font-size: 1.5rem;
             }
             
-            .gallery-modal__description {
-                color: #7f8c8d;
-                line-height: 1.6;
-                margin-bottom: 15px;
-                font-size: 1.1rem;
+            .gallery-modal__nav {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
             }
             
-            .gallery-modal__counter {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-                color: white;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-weight: 600;
-                font-size: 0.9rem;
+            .gallery-modal__close {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
             }
             
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+            .gallery-modal__prev {
+                left: 10px;
             }
             
-            @keyframes zoomIn {
-                from { 
-                    opacity: 0;
-                    transform: scale(0.8);
-                }
-                to { 
-                    opacity: 1;
-                    transform: scale(1);
-                }
-            }
-            
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; }
-            }
-            
-            @keyframes slideNext {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @keyframes slidePrev {
-                from { transform: translateX(-100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @media (max-width: 768px) {
-                .gallery-modal__content {
-                    max-width: 95vw;
-                    max-height: 95vh;
-                }
-                
-                .gallery-modal__image {
-                    max-height: 60vh;
-                }
-                
-                .gallery-modal__info {
-                    padding: 20px;
-                }
-                
-                .gallery-modal__title {
-                    font-size: 1.5rem;
-                }
-                
-                .gallery-modal__description {
-                    font-size: 1rem;
-                }
-                
-                .gallery-modal__nav {
-                    width: 40px;
-                    height: 40px;
-                    font-size: 16px;
-                }
-                
-                .gallery-modal__close {
-                    width: 40px;
-                    height: 40px;
-                    font-size: 16px;
-                }
-            }
-        `
-        
-        // Add styles if not already added
-        if (!document.querySelector('#gallery-modal-styles-v3')) {
-            const styleElement = document.createElement('style')
-            styleElement.id = 'gallery-modal-styles-v3'
-            styleElement.textContent = modalStyles
-            document.head.appendChild(styleElement)
-        }
-        
-        // Add to page
-        document.body.appendChild(modal)
-        document.body.style.overflow = 'hidden'
-        
-        // Update image function
-        function updateImage(direction = null) {
-            const img = modal.querySelector('.gallery-modal__image')
-            const title = modal.querySelector('.gallery-modal__title')
-            const description = modal.querySelector('.gallery-modal__description')
-            const counter = modal.querySelector('.gallery-modal__counter')
-            
-            // Add animation class based on direction
-            if (direction) {
-                img.style.animation = direction === 'next' ? 'slideNext 0.3s ease-out' : 'slidePrev 0.3s ease-out'
-            }
-            
-            img.src = galleryImages[currentImageIndex].src
-            img.alt = galleryImages[currentImageIndex].title
-            title.textContent = galleryImages[currentImageIndex].title
-            description.textContent = galleryImages[currentImageIndex].description
-            counter.innerHTML = `<span>${currentImageIndex + 1}</span> / <span>${galleryImages.length}</span>`
-            
-            // Remove animation after completion
-            setTimeout(() => {
-                img.style.animation = ''
-            }, 300)
-        }
-        
-        // Navigation functions
-        function nextImage() {
-            currentImageIndex = (currentImageIndex + 1) % galleryImages.length
-            updateImage('next')
-        }
-        
-        function prevImage() {
-            currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length
-            updateImage('prev')
-        }
-        
-        // Close modal functionality
-        const closeModal = () => {
-            modal.style.animation = 'fadeOut 0.3s ease-in'
-            setTimeout(() => {
-                if (document.body.contains(modal)) {
-                    document.body.removeChild(modal)
-                    document.body.style.overflow = 'auto'
-                }
-            }, 300)
-        }
-        
-        // Event listeners
-        modal.querySelector('.gallery-modal__overlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeModal()
-        })
-        
-        modal.querySelector('.gallery-modal__close').addEventListener('click', closeModal)
-        modal.querySelector('.gallery-modal__next').addEventListener('click', nextImage)
-        modal.querySelector('.gallery-modal__prev').addEventListener('click', prevImage)
-        
-        // Keyboard navigation
-        const handleKeyboard = (e) => {
-            switch(e.key) {
-                case 'Escape':
-                    closeModal()
-                    document.removeEventListener('keydown', handleKeyboard)
-                    break
-                case 'ArrowRight':
-                    nextImage()
-                    break
-                case 'ArrowLeft':
-                    prevImage()
-                    break
+            .gallery-modal__next {
+                right: 10px;
             }
         }
-        document.addEventListener('keydown', handleKeyboard)
-        
-        // Touch/swipe support for mobile
-        let startX = 0
-        let endX = 0
-        
-        modal.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX
-        })
-        
-        modal.addEventListener('touchend', (e) => {
-            endX = e.changedTouches[0].clientX
-            const diffX = startX - endX
-            
-            if (Math.abs(diffX) > 50) { // Minimum swipe distance
-                if (diffX > 0) {
-                    nextImage() // Swipe left - next image
-                } else {
-                    prevImage() // Swipe right - previous image
-                }
-            }
-        })
+    `;
+
+    // Add styles to head if not already added
+    if (!document.querySelector('#gallery-modal-styles')) {
+        const styleElement = document.createElement('style');
+        styleElement.id = 'gallery-modal-styles';
+        styleElement.textContent = modalStyles;
+        document.head.appendChild(styleElement);
     }
 
-    galleryItems.forEach((item, index) => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault()
-            console.log('Gallery item clicked:', index) // Debug
-            currentImageIndex = index
-            openGalleryModal()
-        })
-        // Add cursor pointer style
-        item.style.cursor = 'pointer'
-    })
-})
+    console.log('Gallery modal initialized successfully!');
+});
 
 /*=============== SMOOTH SCROLLING ===============*/
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

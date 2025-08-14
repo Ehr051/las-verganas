@@ -600,9 +600,9 @@ function openGalleryModal() {
     `
     
     // Add styles if not already added
-    if (!document.querySelector('#gallery-modal-styles')) {
+    if (!document.querySelector('#gallery-modal-styles-v2')) {
         const styleElement = document.createElement('style')
-        styleElement.id = 'gallery-modal-styles'
+        styleElement.id = 'gallery-modal-styles-v2'
         styleElement.textContent = modalStyles
         document.head.appendChild(styleElement)
     }

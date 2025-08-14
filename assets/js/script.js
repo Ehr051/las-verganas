@@ -92,16 +92,16 @@ activeLinkStyle.textContent = `
 document.head.appendChild(activeLinkStyle);
 
 /*=============== SCROLL REVEAL ANIMATION ===============*/
-const sr = ScrollReveal({
-    origin: 'top',
-    distance: '60px',
-    duration: 2000,
-    delay: 400,
-    reset: false
-})
-
 // Check if ScrollReveal is loaded before using it
 if (typeof ScrollReveal !== 'undefined') {
+    const sr = ScrollReveal({
+        origin: 'top',
+        distance: '60px',
+        duration: 2000,
+        delay: 400,
+        reset: false
+    })
+
     sr.reveal('.hero__content, .section__header')
     sr.reveal('.hero__image', {origin: 'right'})
     sr.reveal('.info__card', {interval: 100})
@@ -110,6 +110,8 @@ if (typeof ScrollReveal !== 'undefined') {
     sr.reveal('.contact__card, .contact__form', {interval: 100})
     sr.reveal('.footer__content', {origin: 'bottom'})
 } else {
+    console.log('ScrollReveal not loaded, using fallback animations')
+    
     // Fallback animation for when ScrollReveal is not available
     const observerOptions = {
         threshold: 0.1,
@@ -125,8 +127,9 @@ if (typeof ScrollReveal !== 'undefined') {
         });
     }, observerOptions);
 
-    // Observe elements for animations
-    document.querySelectorAll('.info__card, .plan__card, .gallery__item, .contact__card').forEach(el => {
+    // Apply fallback animation to elements
+    const animatedElements = document.querySelectorAll('.hero__content, .section__header, .info__card, .plan__card, .gallery__item, .contact__card, .contact__form, .footer__content');
+    animatedElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
@@ -375,7 +378,7 @@ document.head.appendChild(slideOutStyle);
 /*=============== GALLERY MODAL WITH NAVIGATION ===============*/
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing gallery...');
+    console.log('🎯 DOM loaded, initializing gallery...');
     
     // Gallery configuration
     const galleryImages = [
@@ -401,21 +404,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Get all gallery items
     const galleryItems = document.querySelectorAll('.gallery__item');
-    console.log('Found gallery items:', galleryItems.length);
+    console.log('🖼️ Found gallery items:', galleryItems.length);
+    
+    if (galleryItems.length === 0) {
+        console.warn('⚠️ No gallery items found! Checking selector...');
+        console.log('Available elements with gallery class:', document.querySelectorAll('[class*="gallery"]'));
+    }
 
     // Add click event to each gallery item
     galleryItems.forEach((item, index) => {
+        console.log(`🔗 Setting up click handler for gallery item ${index}`);
         item.style.cursor = 'pointer';
+        
+        // Add visual feedback
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
         item.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Gallery item clicked:', index);
+            e.stopPropagation();
+            console.log('🎯 Gallery item clicked:', index, this);
             currentImageIndex = index;
             openModal();
         });
     });
 
     function openModal() {
-        console.log('Opening modal for image:', currentImageIndex);
+        console.log('🚀 Opening modal for image:', currentImageIndex);
+        
+        // Remove any existing modal
+        const existingModal = document.querySelector('.gallery-modal');
+        if (existingModal) {
+            console.log('🗑️ Removing existing modal');
+            existingModal.remove();
+        }
         
         // Create modal HTML
         modal = document.createElement('div');
@@ -449,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add modal to page
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
+        console.log('📎 Modal added to DOM');
 
         // Update image content
         updateModalImage();
@@ -459,6 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add entrance animation
         setTimeout(() => {
             modal.classList.add('gallery-modal--active');
+            console.log('✨ Modal activated');
         }, 10);
     }
 
@@ -930,3 +960,30 @@ const validationStyles = `
 const validationStyleElement = document.createElement('style');
 validationStyleElement.textContent = validationStyles;
 document.head.appendChild(validationStyleElement);
+
+/*=============== DEBUG FUNCTIONS ===============*/
+// Debug function to test gallery functionality
+window.testGallery = function() {
+    console.log('🧪 Testing gallery functionality...');
+    const galleryItems = document.querySelectorAll('.gallery__item');
+    console.log('📸 Gallery items found:', galleryItems.length);
+    
+    if (galleryItems.length > 0) {
+        console.log('🎯 Simulating click on first gallery item...');
+        galleryItems[0].click();
+    } else {
+        console.error('❌ No gallery items found!');
+        console.log('Available elements:', document.querySelectorAll('[class*="gallery"]'));
+    }
+};
+
+// Auto-test after 2 seconds if in development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    setTimeout(() => {
+        console.log('🔧 Development mode detected - running auto-test');
+        window.testGallery();
+    }, 3000);
+}
+
+console.log('✅ Las Verganas script loaded successfully!');
+console.log('🎮 Use window.testGallery() to test gallery functionality');

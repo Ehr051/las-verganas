@@ -611,8 +611,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .gallery-modal__content {
             position: relative;
-            max-width: 90vw;
-            max-height: 90vh;
+            max-width: 85vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(25px);
             border-radius: 20px;
@@ -620,6 +622,8 @@ document.addEventListener('DOMContentLoaded', function() {
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             transform: scale(0.8);
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .gallery-modal--active .gallery-modal__content {
@@ -684,40 +688,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .gallery-modal__image-container {
             width: 100%;
-            height: 70vh;
+            flex: 1;
+            min-height: 0;
+            max-height: calc(85vh - 200px);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .gallery-modal__image {
             max-width: 100%;
             max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
             transition: transform 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
         .gallery-modal__info {
-            padding: 30px;
+            padding: 25px 30px;
             text-align: center;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+            max-height: 180px;
+            overflow-y: auto;
         }
 
         .gallery-modal__title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             color: #1a4d3a;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            line-height: 1.2;
         }
 
         .gallery-modal__description {
             color: #7f8c8d;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-size: 1rem;
         }
 
         .gallery-modal__counter {
@@ -726,11 +743,38 @@ document.addEventListener('DOMContentLoaded', function() {
             gap: 8px;
             background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 25px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Desktop specific improvements */
+        @media (min-width: 769px) {
+            .gallery-modal__content {
+                max-width: 80vw;
+                max-height: 80vh;
+                min-width: 600px;
+            }
+            
+            .gallery-modal__image-container {
+                max-height: calc(80vh - 160px);
+                padding: 30px;
+            }
+            
+            .gallery-modal__info {
+                padding: 20px 30px;
+                max-height: 140px;
+            }
+            
+            .gallery-modal__title {
+                font-size: 1.6rem;
+            }
+            
+            .gallery-modal__description {
+                font-size: 1rem;
+            }
         }
 
         @media (max-width: 768px) {

@@ -166,11 +166,11 @@ if (contactForm) {
         }
         
         // Create email content
-        const emailSubject = encodeURIComponent(`Consulta Las Verganas - ${subject}`)
+        const emailSubject = encodeURIComponent(`Consulta SierraLuna - ${subject}`)
         const emailBody = encodeURIComponent(`
 Hola Silvia,
 
-Has recibido una nueva consulta sobre el proyecto Las Verganas:
+Has recibido una nueva consulta sobre el proyecto SierraLuna:
 
 ------- DETALLES DE LA CONSULTA -------
 Nombre: ${name}
@@ -183,13 +183,13 @@ ${message}
 
 ------- INFORMACIÓN ADICIONAL -------
 Fecha y hora: ${new Date().toLocaleString('es-AR')}
-Sitio web: Las Verganas - Plan Conexión San Luis
+Sitio web: SierraLuna - Plan Conexión San Luis
 
 ------- RESPUESTA -------
 Podés responder directamente a este email: ${email}
 
 Saludos,
-Sistema de contacto Las Verganas
+Sistema de contacto SierraLuna
         `)
         
         // Create mailto link to Silvia's email
@@ -216,9 +216,9 @@ Sistema de contacto Las Verganas
                 `Para enviar tu consulta, copia esta información y enviala por email a: rua_silvia@hotmail.com o WhatsApp: +54 9 2665-240838`,
                 'info'
             )
-            console.log('Consulta Las Verganas para copiar:', {
+            console.log('Consulta SierraLuna para copiar:', {
                 destinatario: 'rua_silvia@hotmail.com',
-                asunto: `Consulta Las Verganas - ${subject}`,
+                asunto: `Consulta SierraLuna - ${subject}`,
                 mensaje: `Nombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nConsulta: ${message}`,
                 whatsapp: '+54 9 2665-240838'
             })
@@ -915,7 +915,7 @@ const createScrollUpButton = () => {
 createScrollUpButton()
 
 /*=============== CONSOLE MESSAGES ===============*/
-console.log('🏔️ Las Verganas - Complejo Turístico')
+console.log('🏔️ SierraLuna - Complejo Turístico')
 console.log('📍 Ubicación: Nogolí, San Luis, Argentina')
 console.log('👭 Emprendedoras: Silvia y Natalia Verga')
 console.log('📞 Contacto: +54 9 2665-240838')
@@ -1041,5 +1041,5 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     }, 3000);
 }
 
-console.log('✅ Las Verganas script loaded successfully!');
+console.log('✅ SierraLuna script loaded successfully!');
 console.log('🎮 Use window.testGallery() to test gallery functionality');

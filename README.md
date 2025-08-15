@@ -1,4 +1,4 @@
-# 🏔️ Las Verganas - Complejo Turístico
+# 🏔️ SierraLuna - Complejo Turístico
 
 ## 🌟 **Sitio Web en Vivo**
 **🔗 [Ver sitio web](https://ehr051.github.io/las-verganas/)**
@@ -8,7 +8,7 @@
 ---
 
 ## 📍 **Sobre el Proyecto**
-Sitio web oficial del complejo turístico **"Las Verganas"** en **Nogolí, San Luis, Argentina**. 
+Sitio web oficial del complejo turístico **"SierraLuna"** en **Nogolí, San Luis, Argentina**. 
 
 Emprendimiento familiar de **Silvia y Natalia Verga** presentado al **Plan Conexión San Luis 2025**.
 
@@ -151,7 +151,7 @@ Sitio web desarrollado para presentación profesional al **Plan Conexión San Lu
 
 **🚀 SITIO EN VIVO:** https://ehr051.github.io/las-verganas/
 
-**© 2025 Las Verganas - Complejo Turístico | Nogolí, San Luis, Argentina**
+**© 2025 SierraLuna - Complejo Turístico | Nogolí, San Luis, Argentina**
 
 ---
 

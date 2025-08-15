@@ -1,4 +1,4 @@
-# Las Verganas - Complejo Turístico
+# SierraLuna - Complejo Turístico
 
 🌟 **Sitio web en vivo**: [Ver proyecto](https://ehr051.github.io/las-verganas/)
 
@@ -21,4 +21,4 @@ Presentación profesional para solicitud de financiamiento Plan Conexión San Lu
 
 ---
 
-© 2025 Las Verganas | Developed for GitHub Pages
+© 2025 SierraLuna | Developed for GitHub Pages
